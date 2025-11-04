@@ -2,6 +2,7 @@
 #include <array>
 #include <vector>
 #include <iostream>
+#include <deque>
 template<size_t height = 1, size_t width = height>
 struct Dimension2d
 {
@@ -152,7 +153,7 @@ struct FloodFill
 	template<bool (*ContinueFN)(const tabType& value), void (*AffectationFN)(tabType& value)>
 	static void Iterative(Grid2d<tabType, height, width>& tab, size_t index)
 	{
-		std::vector<size_t> toVisit;
+		std::deque<size_t> toVisit;
 		toVisit.push_back(index);
 
 		size_t currentIndex = 0;
@@ -160,7 +161,7 @@ struct FloodFill
 		{
 			currentIndex = toVisit.front();
 
-			toVisit.erase(toVisit.begin());
+			toVisit.pop_front();
 
 			if (ContinueFN(tab[currentIndex]))
 				continue;
@@ -177,7 +178,4 @@ struct FloodFill
 				toVisit.push_back(Dimension2d<height, width>::GetIndex(row, col + 1));
 		}
 	}
-
-
-
 };
