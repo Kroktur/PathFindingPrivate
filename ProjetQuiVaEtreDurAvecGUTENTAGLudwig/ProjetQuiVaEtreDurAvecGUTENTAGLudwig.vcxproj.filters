@@ -35,7 +35,7 @@
     <ClInclude Include="Vector3.h">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
-    <ClInclude Include="PathFinding.h">
+    <ClInclude Include="FloodFill.h">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
     <ClInclude Include="Triangle.h">
