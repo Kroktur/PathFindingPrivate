@@ -28,7 +28,7 @@ int main()
 		t2.DrawGrid();
 		if (_getch())
 		{
-			FloodFill<bool, 10>::Iterative< [](const bool& b) {return b == false; }, [](bool& b) {b = false; } > (t2, Dimension2d<10>::GetIndex(1, 1));}
+			FloodFill<bool, 10>::Iterative< [](const bool& b) {return b == true; }, [](bool& b) {b = false; } > (t2, Dimension2d<10>::GetIndex(1, 1));}
 		std::cout << "\n";
 		t2.DrawGrid();
 

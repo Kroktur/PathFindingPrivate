@@ -1,6 +1,5 @@
 #pragma once
 #include <array>
-#include <vector>
 #include <iostream>
 #include <deque>
 template<size_t height = 1, size_t width = height>
@@ -133,24 +132,24 @@ Grid2d<tabType, height, width>::Grid2d(std::array<tabType, Dimension2d<height, w
 template<typename tabType, size_t height, size_t width = height>
 struct FloodFill
 {
-	template<bool (*ContinueFN)(const tabType& value), void (*AffectationFN)(tabType& value)>
+	template<bool (*ModifyFn)(const tabType& value), void (*AffectationFN)(tabType& value)>
 	static void Recursive(Grid2d<tabType, height, width>& tab, size_t index)
 	{
-		if (ContinueFN(tab[index]))
+		if (!ModifyFn(tab[index]))
 			return;
 		AffectationFN(tab[index]);
 		size_t row = index / width;
 		size_t col = index - row * width;
 		if (Dimension2d<height, width>::IsInRange(row - 1, col))
-			Recursive<ContinueFN, AffectationFN>(tab, Dimension2d<height, width>::GetIndex(row - 1, col));
+			Recursive<ModifyFn, AffectationFN>(tab, Dimension2d<height, width>::GetIndex(row - 1, col));
 		if (Dimension2d<height, width>::IsInRange(row + 1, col))
-			Recursive<ContinueFN, AffectationFN>(tab, Dimension2d<height, width>::GetIndex(row + 1, col));
+			Recursive<ModifyFn, AffectationFN>(tab, Dimension2d<height, width>::GetIndex(row + 1, col));
 		if (Dimension2d<height, width>::IsInRange(row, col - 1))
-			Recursive<ContinueFN, AffectationFN>(tab, Dimension2d<height, width>::GetIndex(row, col - 1));
+			Recursive<ModifyFn, AffectationFN>(tab, Dimension2d<height, width>::GetIndex(row, col - 1));
 		if (Dimension2d<height, width>::IsInRange(row, col + 1))
-			Recursive<ContinueFN, AffectationFN>(tab, Dimension2d<height, width>::GetIndex(row, col + 1));
+			Recursive<ModifyFn, AffectationFN>(tab, Dimension2d<height, width>::GetIndex(row, col + 1));
 	}
-	template<bool (*ContinueFN)(const tabType& value), void (*AffectationFN)(tabType& value)>
+	template<bool (*ModifyFn)(const tabType& value), void (*AffectationFN)(tabType& value)>
 	static void Iterative(Grid2d<tabType, height, width>& tab, size_t index)
 	{
 		std::deque<size_t> toVisit;
@@ -163,7 +162,7 @@ struct FloodFill
 
 			toVisit.pop_front();
 
-			if (ContinueFN(tab[currentIndex]))
+			if (!ModifyFn(tab[currentIndex]))
 				continue;
 			AffectationFN(tab[currentIndex]);
 			size_t row = currentIndex / width;
