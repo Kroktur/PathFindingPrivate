@@ -132,24 +132,24 @@ Grid2d<tabType, height, width>::Grid2d(std::array<tabType, Dimension2d<height, w
 template<typename tabType, size_t height, size_t width = height>
 struct FloodFill
 {
-	template<bool (*ContinueFN)(const tabType& value), void (*AffectationFN)(tabType& value)>
+	template<bool (*ModifyFN)(const tabType& value), void (*AffectationFN)(tabType& value)>
 	static void Recursive(Grid2d<tabType, height, width>& tab, size_t index)
 	{
-		if (ContinueFN(tab[index]))
+		if (!ModifyFN(tab[index]))
 			return;
 		AffectationFN(tab[index]);
-		size_t row = index / width;
-		size_t col = index - row * width;
-		if (Dimension2d<height, width>::IsInRange(row - 1, col))
-			Recursive<ContinueFN, AffectationFN>(tab, Dimension2d<height, width>::GetIndex(row - 1, col));
-		if (Dimension2d<height, width>::IsInRange(row + 1, col))
-			Recursive<ContinueFN, AffectationFN>(tab, Dimension2d<height, width>::GetIndex(row + 1, col));
-		if (Dimension2d<height, width>::IsInRange(row, col - 1))
-			Recursive<ContinueFN, AffectationFN>(tab, Dimension2d<height, width>::GetIndex(row, col - 1));
-		if (Dimension2d<height, width>::IsInRange(row, col + 1))
-			Recursive<ContinueFN, AffectationFN>(tab, Dimension2d<height, width>::GetIndex(row, col + 1));
+		size_t raw = index / width;
+		size_t col = index - raw * width;
+		if (Dimension2d<height, width>::IsInRange(raw - 1, col))
+			Recursive<ModifyFN, AffectationFN>(tab, Dimension2d<height, width>::GetIndex(raw - 1, col));
+		if (Dimension2d<height, width>::IsInRange(raw + 1, col))
+			Recursive<ModifyFN, AffectationFN>(tab, Dimension2d<height, width>::GetIndex(raw + 1, col));
+		if (Dimension2d<height, width>::IsInRange(raw, col - 1))
+			Recursive<ModifyFN, AffectationFN>(tab, Dimension2d<height, width>::GetIndex(raw, col - 1));
+		if (Dimension2d<height, width>::IsInRange(raw, col + 1))
+			Recursive<ModifyFN, AffectationFN>(tab, Dimension2d<height, width>::GetIndex(raw, col + 1));
 	}
-	template<bool (*ContinueFN)(const tabType& value), void (*AffectationFN)(tabType& value)>
+	template<bool (*ModifyFN)(const tabType& value), void (*AffectationFN)(tabType& value)>
 	static void Iterative(Grid2d<tabType, height, width>& tab, size_t index)
 	{
 		std::vector<size_t> toVisit;
@@ -162,19 +162,19 @@ struct FloodFill
 
 			toVisit.erase(toVisit.begin());
 
-			if (ContinueFN(tab[currentIndex]))
+			if (!ModifyFN(tab[currentIndex]))
 				continue;
 			AffectationFN(tab[currentIndex]);
-			size_t row = currentIndex / width;
-			size_t col = currentIndex - row * width;
-			if (row != 0)
-				toVisit.push_back(Dimension2d<height, width>::GetIndex(row - 1, col));
-			if (row != height - 1)
-				toVisit.push_back(Dimension2d<height, width>::GetIndex(row + 1, col));
+			size_t raw = currentIndex / width;
+			size_t col = currentIndex - raw * width;
+			if (raw != 0)
+				toVisit.push_back(Dimension2d<height, width>::GetIndex(raw - 1, col));
+			if (raw != height - 1)
+				toVisit.push_back(Dimension2d<height, width>::GetIndex(raw + 1, col));
 			if (col != 0)
-				toVisit.push_back(Dimension2d<height, width>::GetIndex(row, col - 1));
+				toVisit.push_back(Dimension2d<height, width>::GetIndex(raw, col - 1));
 			if (col != width - 1)
-				toVisit.push_back(Dimension2d<height, width>::GetIndex(row, col + 1));
+				toVisit.push_back(Dimension2d<height, width>::GetIndex(raw, col + 1));
 		}
 	}
 

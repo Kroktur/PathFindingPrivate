@@ -13,9 +13,8 @@ public:
 	Vector3() = default;
 	Vector3(const value_type& x_, const value_type& y_, const value_type& z_);
 	Vector3(const class_type& other);
+	Vector3(const class_type& lhs, const class_type& rhs);
 	Vector3(class_type&& other) noexcept;
-	Vector3(const VectorND<type, 3>& other);
-	Vector3(VectorND<type, 3>&& other) noexcept;
 	class_type& operator=(const class_type&) = default;
 	class_type& operator=(class_type&&) = default;
 	class_type& operator=(const VectorND<type, 3>& other);
@@ -45,17 +44,13 @@ Vector3<type>::Vector3(const class_type& other) : VectorND<type, 3>(other), x(th
 }
 
 template <typename type>
+Vector3<type>::Vector3(const class_type& lhs, const class_type& rhs) : VectorND<type, 3>(lhs,rhs), x(this->m_data[0]), y(this->m_data[1]), z(this->m_data[2])
+{
+
+}
+
+template <typename type>
 Vector3<type>::Vector3(class_type&& other) noexcept : VectorND<type, 2>(std::move(other)), x(this->m_data[0]), y(this->m_data[1]), z(this->m_data[2])
-{
-}
-
-template <typename type>
-Vector3<type>::Vector3(const VectorND<type, 3>& other) : VectorND<type, 2>(other), x(this->m_data[0]), y(this->m_data[1]), z(this->m_data[2])
-{
-}
-
-template <typename type>
-Vector3<type>::Vector3(VectorND<type, 3>&& other) noexcept : VectorND<type, 2>(std::move(other)), x(this->m_data[0]), y(this->m_data[1]), z(this->m_data[2])
 {
 }
 

@@ -12,8 +12,7 @@ public:
 	Vector2(const value_type& x_, const value_type& y_);
 	Vector2(const class_type& other);
 	Vector2(class_type&& other) noexcept;
-	Vector2(const VectorND<type, 2>& other);
-	Vector2(VectorND<type, 2>&& other) noexcept;
+	Vector2(const class_type& lhs, const class_type& rhs);
 	class_type& operator=(const class_type&) = default;
 	class_type& operator=(class_type&&) = default;
 	class_type& operator=(const VectorND<type, 2>& other);
@@ -49,13 +48,9 @@ Vector2<type>::Vector2(class_type&& other) noexcept : VectorND<type, 2>(std::mov
 }
 
 template <typename type>
-Vector2<type>::Vector2(const VectorND<type, 2>& other) : VectorND<type, 2>(other), x(this->m_data[0]), y(this->m_data[1])
+Vector2<type>::Vector2(const class_type& lhs, const class_type& rhs) : VectorND<type,2>(lhs,rhs),x(this->m_data[0]),y(this->m_data[1])
 {
-}
 
-template <typename type>
-Vector2<type>::Vector2(VectorND<type, 2>&& other) noexcept : VectorND<type, 2>(std::move(other)), x(this->m_data[0]), y(this->m_data[1])
-{
 }
 
 
