@@ -126,8 +126,11 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="PathFinding.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="FloodFill.h" />
+    <ClInclude Include="Triangle.h" />
     <ClInclude Include="Vector2.h" />
     <ClInclude Include="Vector3.h" />
     <ClInclude Include="VectorND.h" />
