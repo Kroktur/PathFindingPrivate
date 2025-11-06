@@ -1,13 +1,9 @@
 #pragma once
+#include <vector>
 
 struct Point
 {
-	float x, y;
-};
-
-struct Vec2
-{
-	float x, y;
+	float x, y, z;
 };
 
 struct Triangle
@@ -44,4 +40,27 @@ struct Triangle
 		auto startVec = A;
 		auto dirVec = G;
 	}
+};
+
+struct Square
+{
+	int m_height;
+
+	Square(int value) : m_height(value)
+	{ }
+
+	float getSize()
+	{
+		return m_height * m_height;
+	}
+};
+
+struct Grid
+{
+	int m_height, m_width;
+
+	Grid(int value) : m_height(value), m_width(value)
+	{ }
+
+	std::vector<Square> tab;
 };
