@@ -4,6 +4,8 @@
 #include <deque>
 #include <cmath>
 
+#pragma optimise ("", off)
+
 struct Point
 {
     float x;
@@ -26,14 +28,31 @@ struct Vec3
     }
 };
 
-Vec3 crossProduct(const Point& A, const Point& B)
-{
-    Vec3 AB;
-    AB.getVector(A, B);
 
-    return { A.y * B.z - A.z * B.y,
-             A.z * B.x - A.x * B.z,
-             A.x * B.y - A.y * B.x, };
+struct Vec2
+{
+    float x, y;
+
+    static Vec2 getVector(const Point& A, const Point& B)
+    {
+        return { B.x - A.x, B.y - A.y};
+    }
+};
+
+
+Vec3 crossProduct(const Vec3& AB, const Vec3& AC)
+{
+    return { AB.y * AC.z - AB.z * AC.y,
+             AB.z * AC.x - AB.x * AC.z,
+             AB.x * AC.y - AB.y * AC.x, };
+}
+
+float crossProduct(const Point& A, const Point& B, const Point& C)
+{
+    Vec2 AB = Vec2::getVector(A, B);
+    Vec2 AC = Vec2::getVector(A, C);
+
+    return AB.x * AC.y - AB.y * AC.x;
 }
 
 float dotProduct(const Vec3& A, const Vec3& B)
@@ -47,19 +66,17 @@ struct Triangle
     Point B;
     Point C;
 
-    Triangle(Point value) : A(value), B(value), C(value)
+    Triangle(Point a, Point b, Point c) : A(a), B(b), C(c)
     { }
 
-    bool testPointTriangle(const Point& P, const Point& A, const Point& B, const Point& C) const
+    bool testPointTriangle(const Point& P) const
     {
-        Vec3 c1 = crossProduct(P, A);
-        Vec3 c2 = crossProduct(P, B);
-        Vec3 c3 = crossProduct(P, C);
+        float test1 = crossProduct(A,B,P);
+        float test2 = crossProduct(B,C,P);
+        float test3 = crossProduct(C,A,P);
 
-        Vec3 normal = crossProduct({B.x - A.x, B.y - A.y, B.z - A.z}, { C.x - A.x, C.y - A.y, C.z - A.z } );
-
-        return (dotProduct(c1, normal) >= 0 && dotProduct(c2, normal) >= 0 && dotProduct(c3, normal) >= 0) ||
-               (dotProduct(c1, normal) <= 0 && dotProduct(c2, normal) <= 0 && dotProduct(c3, normal) <= 0);
+        return ((test1 >= 0 && test2 >= 0 && test3 >= 0) ||
+                (test1 <= 0 && test2 <= 0 && test3 <= 0));
     }
 };
 
@@ -70,14 +87,14 @@ struct Limits
     float y_min;
     float y_max;
 
-    Limits limit(const Point& A, const Point& B, const Point& C)
+    static Limits limit(const Triangle& tri)
     {
         Limits l;
-        l.x_min = std::floor(std::min(A.x, B.x, C.x));
-        l.x_max = std::ceil(std::max(A.x, B.x, C.x));
+        l.x_min = std::floor(std::min(std::min(tri.A.x, tri.B.x), tri.C.x));
+        l.x_max = std::ceil(std::max(std::max(tri.A.x, tri.B.x), tri.C.x));
 
-        l.y_min = std::floor(std::min(A.y, B.y, C.y));
-        l.y_max = std::ceil(std::max(A.y, B.y, C.y));
+        l.y_min = std::floor(std::min(std::min(tri.A.y, tri.B.y), tri.C.y));
+        l.y_max = std::ceil(std::max(std::max(tri.A.y, tri.B.y), tri.C.y));
 
         return l;
     }
@@ -89,13 +106,8 @@ struct Grid
 
     int getIndex(int raw, int col) const
     {
-        return raw * width + col;
+        return raw * heigth + col;
     }
-
-    //int getPixelsNumber(int heigth, int width) const
-    //{
-    //    return heigth * width;
-    //}
 
     std::vector<int> data;
 
@@ -132,26 +144,48 @@ struct Grid
 
 struct Floodfill
 {
-    static void FloodFill(Grid& tab, size_t index)
+    static void FloodFill(Grid& tab, const Triangle& t)
     {
+        Limits l = Limits::limit(t);
+
+        for (float y = l.y_min; y <= l.y_max; y++)
+        {
+            for (float x = l.x_min; x <= l.x_max; x++)
+            {
+                Point P = { static_cast<float>(x) + 0.5f, static_cast<float>(y) + 0.5f, 0};
+                if (t.testPointTriangle(P))
+                {
+                    int index = tab.getIndex(y, x);
+                    tab[index] = 1;
+                }
+            }
+        }
+
         std::deque<int> indexVect;
-        indexVect.push_back(index); //indice de départ 
+
+        for (int i = 0; i < tab.width * tab.heigth; ++i)
+        {
+            if (tab[i] == 1)
+            {
+                indexVect.push_back(i);
+                break;
+            }
+        }
 
         while (!indexVect.empty())
         {
             auto currentIndex = indexVect.front();
             indexVect.pop_front();
-            auto symbol = tab[currentIndex];
 
             size_t raw = currentIndex / tab.width;
             size_t col = currentIndex - raw * tab.width;
 
-            if (symbol != 1)
+            if (tab[currentIndex] != 1)
             {
                 continue;
             }
 
-            tab[currentIndex] = 0;
+            tab[currentIndex] = 2;
 
             if (raw != 0)
                 indexVect.push_back(tab.getIndex(raw - 1, col));
@@ -168,13 +202,4 @@ struct Floodfill
     }
 };
 
-// To add
-//for (int y = y_min; y <= y_max; y++) {
-//    for (int x = x_min; x <= x_max; x++) {
-//        Point P = { x + 0.5, y + 0.5 }; // centre du pixel
-//        if (pointInTriangle(P, A, B, C)) {
-//            // Ce pixel fait partie du triangle
-//            grid[y][x] = true;
-//        }
-//    }
-//}
+#pragma optimise ("", on)
