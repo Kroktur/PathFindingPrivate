@@ -10,8 +10,8 @@ public:
 	using value_type = type;
 	using class_type = VectorND<value_type, size>;
 	static constexpr size_t vector_size_v = size;
-	template<typename ...Arg>
-	explicit VectorND(const Arg&... args);
+	template<typename ...Arg> requires (sizeof...(Arg) <= size) && (... && (is_floating_type_v<Arg> || is_integral_type_v<Arg>))
+	 VectorND(const Arg&... args);
 	VectorND() = default;
 	VectorND(const class_type& lhs, const class_type& rhs);
 	VectorND(const class_type&) = default;
@@ -66,7 +66,7 @@ using  PointUI = Point<unsigned int, size>;
 
 
 template <typename type, size_t size>
-template <typename ... Arg>
+template <typename ... Arg> requires (sizeof...(Arg) <= size) && (... && (is_floating_type_v<Arg> || is_integral_type_v<Arg>))
 VectorND<type, size>::VectorND(const Arg&... args) : m_data(std::array<type, size>{static_cast<type>(args)...})
 {
 }
@@ -267,4 +267,15 @@ VectorND<type, size> VectorND<type, size>::dot(const class_type& other) const
 		result[i] = m_data[i] * other[i];
 	}
 	return result;
+}
+
+template<typename type,size_t size>
+std::ostream& operator<<(std::ostream& os , const VectorND<type,size>& vec)
+{
+	for (int i = 0 ; i < size ; ++i)
+	{
+		os << vec[i] << " ";
+	}
+	os << "\n";
+	return os;
 }

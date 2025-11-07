@@ -130,7 +130,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="FloodFill.h" />
+    <ClInclude Include="Math.h" />
+    <ClInclude Include="Matrix.h" />
+    <ClInclude Include="PrimaryType_Category.h" />
     <ClInclude Include="Triangle.h" />
+    <ClInclude Include="Typelist.h" />
+    <ClInclude Include="TypeTrait.h" />
     <ClInclude Include="Vector2.h" />
     <ClInclude Include="Vector3.h" />
     <ClInclude Include="VectorND.h" />
