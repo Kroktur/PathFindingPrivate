@@ -27,22 +27,22 @@ public:
 	class_type operator -(const class_type& other) const;
 	class_type& operator +=(const class_type& other);
 	class_type& operator -=(const class_type& other);
-	class_type operator *(const type& factor) const;
-	class_type operator /(const type& divider) const;
-	class_type& operator *=(const type& factor);
-	class_type& operator /=(const type& divider);
+	class_type operator *(const value_type& factor) const;
+	class_type operator /(const value_type& divider) const;
+	class_type& operator *=(const value_type& factor);
+	class_type& operator /=(const value_type& divider);
 
-	type& operator[](const size_t& i);
-	const type& operator[](const size_t& i) const;
-	type& at(const size_t& index);
-	const type& at(const size_t& index) const;
+	value_type& operator[](const size_t& i);
+	const value_type& operator[](const size_t& i) const;
+	value_type& at(const size_t& index);
+	const value_type& at(const size_t& index) const;
 
 
-	type Length() const;
-	type SquareLength() const;
+	value_type Length() const;
+	value_type SquareLength() const;
 	class_type normalize() const;
 	class_type& selfNormalize();
-	class_type dot(const class_type& other) const;
+	value_type dot(const class_type& other) const;
 protected:
 	std::array<type, size> m_data;
 };
@@ -152,7 +152,7 @@ typename VectorND<type, size>::class_type& VectorND<type, size>::operator-=(cons
 }
 
 template <typename type, size_t size>
-typename VectorND<type, size>::class_type VectorND<type, size>::operator*(const type& factor) const
+typename VectorND<type, size>::class_type VectorND<type, size>::operator*(const value_type& factor) const
 {
 	class_type result;
 	for (auto i = 0; i < size; ++i)
@@ -163,7 +163,7 @@ typename VectorND<type, size>::class_type VectorND<type, size>::operator*(const 
 }
 
 template <typename type, size_t size>
-typename VectorND<type, size>::class_type VectorND<type, size>::operator/(const type& divider) const
+typename VectorND<type, size>::class_type VectorND<type, size>::operator/(const value_type& divider) const
 {
 	if (divider == 0)
 		throw std::out_of_range("impossible to divide by 0");
@@ -176,7 +176,7 @@ typename VectorND<type, size>::class_type VectorND<type, size>::operator/(const 
 }
 
 template <typename type, size_t size>
-typename VectorND<type, size>::class_type& VectorND<type, size>::operator*=(const type& factor)
+typename VectorND<type, size>::class_type& VectorND<type, size>::operator*=(const value_type& factor)
 {
 	for (auto i = 0; i < size; ++i)
 	{
@@ -186,7 +186,7 @@ typename VectorND<type, size>::class_type& VectorND<type, size>::operator*=(cons
 }
 
 template <typename type, size_t size>
-typename VectorND<type, size>::class_type& VectorND<type, size>::operator/=(const type& divider)
+typename VectorND<type, size>::class_type& VectorND<type, size>::operator/=(const value_type& divider)
 {
 	if (divider == 0)
 		throw std::out_of_range("impossible to divide by 0");
@@ -198,13 +198,13 @@ typename VectorND<type, size>::class_type& VectorND<type, size>::operator/=(cons
 }
 
 template <typename type, size_t size>
-type VectorND<type, size>::Length() const
+typename VectorND<type, size>::value_type VectorND<type, size>::Length() const
 {
 	return std::sqrt(SquareLength());
 }
 
 template <typename type, size_t size>
-type VectorND<type, size>::SquareLength() const
+typename VectorND<type, size>::value_type VectorND<type, size>::SquareLength() const
 {
 	value_type result = value_type{};
 	for (auto& it : m_data)
@@ -231,13 +231,13 @@ typename VectorND<type, size>::class_type& VectorND<type, size>::selfNormalize()
 }
 
 template <typename type, size_t size>
-const type& VectorND<type, size>::operator[](const size_t& i) const
+const typename VectorND<type, size>::value_type& VectorND<type, size>::operator[](const size_t& i) const
 {
 	return m_data[i];
 }
 
 template <typename type, size_t size>
-type& VectorND<type, size>::at(const size_t& index)
+typename VectorND<type, size>::value_type& VectorND<type, size>::at(const size_t& index)
 {
 	if (index >= size)
 		throw std::out_of_range("index not in range");
@@ -245,7 +245,7 @@ type& VectorND<type, size>::at(const size_t& index)
 }
 
 template <typename type, size_t size>
-const type& VectorND<type, size>::at(const size_t& index) const
+const typename VectorND<type, size>::value_type& VectorND<type, size>::at(const size_t& index) const
 {
 	if (index >= size)
 		throw std::out_of_range("index not in range");
@@ -253,18 +253,18 @@ const type& VectorND<type, size>::at(const size_t& index) const
 }
 
 template <typename type, size_t size>
-type& VectorND<type, size>::operator[](const size_t& i)
+typename VectorND<type, size>::value_type& VectorND<type, size>::operator[](const size_t& i)
 {
 	return m_data[i];
 }
 
 template <typename type, size_t size>
-VectorND<type, size> VectorND<type, size>::dot(const class_type& other) const
+typename VectorND<type, size>::value_type VectorND<type, size>::dot(const class_type& other) const
 {
-	class_type result = class_type{};
+	value_type result = type{};
 	for (int i = 0; i < m_data.size(); ++i)
 	{
-		result[i] = m_data[i] * other[i];
+		result += m_data[i] * other[i];
 	}
 	return result;
 }

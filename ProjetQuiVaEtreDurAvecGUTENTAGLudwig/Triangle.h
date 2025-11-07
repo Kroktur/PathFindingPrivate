@@ -16,15 +16,37 @@ struct Triangle2d
         float x2 = B.x,y2 = B.y, z2 = B.z;
         float x3 = C.x,y3 = C.y, z3 = C.z;
 
-        Matrix<float, 2,3> Am{ x2-x1,y2-y1,z2-z1,
-        					   x3-x1,y3-y1,z3-z1};
-        Matrix<float,2,1> Bm = {Math::Pow(x2,2) +Math::Pow(y2,2)+ Math::Pow(z2,2) - (Math::Pow(x1,2) +Math::Pow(y1,2) +Math::Pow(z1,2) )
-        	                   ,Math::Pow(x3,2) +Math::Pow(y3,2)+ Math::Pow(z3,2) - (Math::Pow(x1,2) +Math::Pow(y1,2)+ Math::Pow(z1,2))};
+        Matrix<float, 3,3> Am{ x2-x1,y2-y1,z2-z1,
+        					   x3-x1,y3-y1,z3-z1,
+                               GetNormal().x,GetNormal().y,GetNormal().z};
+        Matrix<float,3,1> Bm = {Math::Pow(x2,2) +Math::Pow(y2,2)+ Math::Pow(z2,2) - (Math::Pow(x1,2) +Math::Pow(y1,2) +Math::Pow(z1,2) )
+        	                   ,Math::Pow(x3,2) +Math::Pow(y3,2)+ Math::Pow(z3,2) - (Math::Pow(x1,2) +Math::Pow(y1,2)+ Math::Pow(z1,2)),
+                                 (GetNormal().dot(A) * 2)};
 
         
 
         Matrix<float, 3, 1> U = Am.Inverse().MatrixProduct(Bm) * 1.0f/2.0f;
-    	return Vector3F(A.x + U[0], A.y + U[1], A.z + U[2]);
+    	return Vector3F( U[0],  U[1],  U[2]);
+    }
+    bool IsCircumcenter(const Point3F& point) const
+    {
+        Vector3F n = GetNormal();
+        n.selfNormalize();
+
+        Vector3F AP = Vector3F(points[0].position, point);
+        float distToPlane = std::abs(n.dot(AP));
+        if (distToPlane > Math::EPSILON_FLOAT)
+            return false; 
+
+        auto Ap = Vector3F(points[0].position, point);
+        auto Bp = Vector3F(points[1].position, point);
+        auto Cp = Vector3F(points[2].position, point);
+        std::cout << Ap.Length() << "\n";
+        std::cout << Bp.Length() << "\n";
+        std::cout << Cp.Length() << "\n";
+        if (Math::IsSameValue(Ap.Length(), Bp.Length(), Math::EPSILON_FLOAT) && Math::IsSameValue(Ap.Length(), Cp.Length(), Math::EPSILON_FLOAT))
+            return true;
+        return false;
     }
 };
 
