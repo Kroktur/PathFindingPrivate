@@ -41,9 +41,6 @@ struct Triangle2d
         auto Ap = Vector3F(points[0].position, point);
         auto Bp = Vector3F(points[1].position, point);
         auto Cp = Vector3F(points[2].position, point);
-        std::cout << Ap.Length() << "\n";
-        std::cout << Bp.Length() << "\n";
-        std::cout << Cp.Length() << "\n";
         if (Math::IsSameValue(Ap.Length(), Bp.Length(), Math::EPSILON_FLOAT) && Math::IsSameValue(Ap.Length(), Cp.Length(), Math::EPSILON_FLOAT))
             return true;
         return false;

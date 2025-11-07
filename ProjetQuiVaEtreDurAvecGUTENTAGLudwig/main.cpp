@@ -42,8 +42,6 @@ int main()
 	A1.position = Vector3F{ 4.0f, 2.0f, 3.0f };
 	A2.position = Point3F{ 5.0f, 2.0f, 1.0f};
 	A3.position = Point3F{ 3.0f, 6.0f, 4.0f };
-
-	Vector3F t = A1.position - A3.position;
 	//Vector3F A(0.0f, 0.0f, 0.0f);
 	//Vector3F B(4.0f, 0.0f, 0.0f);
 	//Vector3F C(2.0f, 3.0f, 0.0f);
