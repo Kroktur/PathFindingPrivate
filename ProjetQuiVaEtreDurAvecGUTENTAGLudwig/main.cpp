@@ -5,6 +5,7 @@
 #include "FloodFill.h"
 #include "Matrix.h"
 #include "Triangle.h"
+#include "Vector2.h"
 #include "Vertex.h"
 
 static constexpr bool grille[] = {
@@ -46,11 +47,7 @@ int main()
 	//Vector3F B(4.0f, 0.0f, 0.0f);
 	//Vector3F C(2.0f, 3.0f, 0.0f);
 
-	Triangle2d triangle;
-	triangle.points = {A1,A2,A3};
-	auto result = triangle.GetCircumcenter();
-	if (!triangle.IsCircumcenter(result))
-		throw;
+	auto result = VectorND<float,4>::Dir<Dir::FORWARD>();
 	std::cout << result;
 	//FloodFill(t2,Grid2d<10>::GetIndex(1,1));
 	//FloodFillFn(t2, Dimension2d<10>::GetIndex(7, 8));

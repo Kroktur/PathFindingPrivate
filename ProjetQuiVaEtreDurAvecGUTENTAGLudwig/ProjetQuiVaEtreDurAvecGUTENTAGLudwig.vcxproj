@@ -129,9 +129,11 @@
     <ClCompile Include="PathFinding.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AABB.h" />
     <ClInclude Include="FloodFill.h" />
     <ClInclude Include="Math.h" />
     <ClInclude Include="Matrix.h" />
+    <ClInclude Include="NavMesh.h" />
     <ClInclude Include="PrimaryType_Category.h" />
     <ClInclude Include="Triangle.h" />
     <ClInclude Include="Typelist.h" />
