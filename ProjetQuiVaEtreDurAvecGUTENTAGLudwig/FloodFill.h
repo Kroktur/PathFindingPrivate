@@ -4,101 +4,9 @@
 #include <deque>
 #include <cmath>
 
-#pragma optimise ("", off)
-
-struct Point
-{
-    float x;
-    float y;
-    float z;
-};
-
-struct Vec3
-{
-    float x;
-    float y;
-    float z;
-
-    Point A;
-    Point B;
-
-    Vec3 getVector(const Point& A, const Point& B) const
-    {
-        return { B.x - A.x, B.y - A.y, B.z - A.z };
-    }
-};
-
-
-struct Vec2
-{
-    float x, y;
-
-    static Vec2 getVector(const Point& A, const Point& B)
-    {
-        return { B.x - A.x, B.y - A.y};
-    }
-};
-
-
-Vec3 crossProduct(const Vec3& AB, const Vec3& AC)
-{
-    return { AB.y * AC.z - AB.z * AC.y,
-             AB.z * AC.x - AB.x * AC.z,
-             AB.x * AC.y - AB.y * AC.x, };
-}
-
-float crossProduct(const Point& A, const Point& B, const Point& C)
-{
-    Vec2 AB = Vec2::getVector(A, B);
-    Vec2 AC = Vec2::getVector(A, C);
-
-    return AB.x * AC.y - AB.y * AC.x;
-}
-
-float dotProduct(const Vec3& A, const Vec3& B)
-{
-    return A.x * B.x + A.y * B.y + A.z * B.z;
-}
-
-struct Triangle
-{
-    Point A;
-    Point B;
-    Point C;
-
-    Triangle(Point a, Point b, Point c) : A(a), B(b), C(c)
-    { }
-
-    bool testPointTriangle(const Point& P) const
-    {
-        float test1 = crossProduct(A,B,P);
-        float test2 = crossProduct(B,C,P);
-        float test3 = crossProduct(C,A,P);
-
-        return ((test1 >= 0 && test2 >= 0 && test3 >= 0) ||
-                (test1 <= 0 && test2 <= 0 && test3 <= 0));
-    }
-};
-
-struct Limits
-{
-    float x_min;
-    float x_max;
-    float y_min;
-    float y_max;
-
-    static Limits limit(const Triangle& tri)
-    {
-        Limits l;
-        l.x_min = std::floor(std::min(std::min(tri.A.x, tri.B.x), tri.C.x));
-        l.x_max = std::ceil(std::max(std::max(tri.A.x, tri.B.x), tri.C.x));
-
-        l.y_min = std::floor(std::min(std::min(tri.A.y, tri.B.y), tri.C.y));
-        l.y_max = std::ceil(std::max(std::max(tri.A.y, tri.B.y), tri.C.y));
-
-        return l;
-    }
-};
+#include "Vector3.h"
+#include "Vector2.h"
+#include "Triangle.h"
 
 struct Grid
 {
@@ -152,7 +60,7 @@ struct Floodfill
         {
             for (float x = l.x_min; x <= l.x_max; x++)
             {
-                Point P = { static_cast<float>(x) + 0.5f, static_cast<float>(y) + 0.5f, 0};
+                Point3F P = { static_cast<float>(x) + 0.5f, static_cast<float>(y) + 0.5f, 0};
                 if (t.testPointTriangle(P))
                 {
                     int index = tab.getIndex(y, x);
@@ -201,5 +109,3 @@ struct Floodfill
         }
     }
 };
-
-#pragma optimise ("", on)

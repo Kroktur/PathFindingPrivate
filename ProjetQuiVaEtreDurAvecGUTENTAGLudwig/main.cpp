@@ -15,9 +15,9 @@ int main()
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0
     };
 
-    Point A = { 2,5,0 };
-    Point B = { 5,2,0 };
-    Point C = { 8,6,0 };
+    Point3F A = { 2,5,0 };
+    Point3F B = { 5,2,0 };
+    Point3F C = { 8,6,0 };
 
     Grid grid(10);
     Triangle triangle(A, B, C);
