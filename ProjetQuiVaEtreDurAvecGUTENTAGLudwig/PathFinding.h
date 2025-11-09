@@ -1,7 +1,7 @@
 #pragma once
 #include <array>
+#include <vector>
 #include <iostream>
-#include <deque>
 template<size_t height = 1, size_t width = height>
 struct Dimension2d
 {
@@ -132,27 +132,27 @@ Grid2d<tabType, height, width>::Grid2d(std::array<tabType, Dimension2d<height, w
 template<typename tabType, size_t height, size_t width = height>
 struct FloodFill
 {
-	template<bool (*ModifyFn)(const tabType& value), void (*AffectationFN)(tabType& value)>
+	template<bool (*ModifyFN)(const tabType& value), void (*AffectationFN)(tabType& value)>
 	static void Recursive(Grid2d<tabType, height, width>& tab, size_t index)
 	{
-		if (!ModifyFn(tab[index]))
+		if (!ModifyFN(tab[index]))
 			return;
 		AffectationFN(tab[index]);
 		size_t raw = index / width;
 		size_t col = index - raw * width;
 		if (Dimension2d<height, width>::IsInRange(raw - 1, col))
-			Recursive<ModifyFn, AffectationFN>(tab, Dimension2d<height, width>::GetIndex(raw - 1, col));
+			Recursive<ModifyFN, AffectationFN>(tab, Dimension2d<height, width>::GetIndex(raw - 1, col));
 		if (Dimension2d<height, width>::IsInRange(raw + 1, col))
-			Recursive<ModifyFn, AffectationFN>(tab, Dimension2d<height, width>::GetIndex(raw + 1, col));
+			Recursive<ModifyFN, AffectationFN>(tab, Dimension2d<height, width>::GetIndex(raw + 1, col));
 		if (Dimension2d<height, width>::IsInRange(raw, col - 1))
-			Recursive<ModifyFn, AffectationFN>(tab, Dimension2d<height, width>::GetIndex(raw, col - 1));
+			Recursive<ModifyFN, AffectationFN>(tab, Dimension2d<height, width>::GetIndex(raw, col - 1));
 		if (Dimension2d<height, width>::IsInRange(raw, col + 1))
-			Recursive<ModifyFn, AffectationFN>(tab, Dimension2d<height, width>::GetIndex(raw, col + 1));
+			Recursive<ModifyFN, AffectationFN>(tab, Dimension2d<height, width>::GetIndex(raw, col + 1));
 	}
-	template<bool (*ModifyFn)(const tabType& value), void (*AffectationFN)(tabType& value)>
+	template<bool (*ModifyFN)(const tabType& value), void (*AffectationFN)(tabType& value)>
 	static void Iterative(Grid2d<tabType, height, width>& tab, size_t index)
 	{
-		std::deque<size_t> toVisit;
+		std::vector<size_t> toVisit;
 		toVisit.push_back(index);
 
 		size_t currentIndex = 0;
@@ -160,9 +160,9 @@ struct FloodFill
 		{
 			currentIndex = toVisit.front();
 
-			toVisit.pop_front();
+			toVisit.erase(toVisit.begin());
 
-			if (!ModifyFn(tab[currentIndex]))
+			if (!ModifyFN(tab[currentIndex]))
 				continue;
 			AffectationFN(tab[currentIndex]);
 			size_t raw = currentIndex / width;
@@ -177,4 +177,7 @@ struct FloodFill
 				toVisit.push_back(Dimension2d<height, width>::GetIndex(raw, col + 1));
 		}
 	}
+
+
+
 };

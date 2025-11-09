@@ -2,6 +2,18 @@
 #include <array>
 #include <cmath>
 #include <stdexcept>
+#include "PrimaryType_Category.h"
+#include "Math.h"
+#include <ostream>
+enum class Dir
+{
+	UP,
+	DOWN,
+	LEFT,
+	RIGHT,
+	FORWARD,
+	BACKWARD
+};
 
 template<typename type, size_t size>
 class VectorND
@@ -10,8 +22,8 @@ public:
 	using value_type = type;
 	using class_type = VectorND<value_type, size>;
 	static constexpr size_t vector_size_v = size;
-	template<typename ...Arg>
-	explicit VectorND(const Arg&... args);
+	template<typename ...Arg> requires (sizeof...(Arg) <= size) && (... && (is_floating_type_v<Arg> || is_integral_type_v<Arg>))
+	 VectorND(const Arg&... args);
 	VectorND() = default;
 	VectorND(const class_type& lhs, const class_type& rhs);
 	VectorND(const class_type&) = default;
@@ -27,25 +39,61 @@ public:
 	class_type operator -(const class_type& other) const;
 	class_type& operator +=(const class_type& other);
 	class_type& operator -=(const class_type& other);
-	class_type operator *(const type& factor) const;
-	class_type operator /(const type& divider) const;
-	class_type& operator *=(const type& factor);
-	class_type& operator /=(const type& divider);
+	class_type operator *(const value_type& factor) const;
+	class_type operator /(const value_type& divider) const;
+	class_type& operator *=(const value_type& factor);
+	class_type& operator /=(const value_type& divider);
 
-	type& operator[](const size_t& i);
-	const type& operator[](const size_t& i) const;
-	type& at(const size_t& index);
-	const type& at(const size_t& index) const;
+	value_type& operator[](const size_t& i);
+	const value_type& operator[](const size_t& i) const;
+	value_type& at(const size_t& index);
+	const value_type& at(const size_t& index) const;
 
 
-	type Length() const;
-	type SquareLength() const;
+	value_type Length() const;
+	value_type SquareLength() const;
 	class_type normalize() const;
 	class_type& selfNormalize();
-	class_type dot(const class_type& other) const;
+	value_type dot(const class_type& other) const;
+	template<Dir dir> requires ( size >=2 )
+	static constexpr class_type  Dir();
 protected:
 	std::array<type, size> m_data;
 };
+
+template <typename type, size_t size>
+template <Dir dir> requires (size >= 2 )
+constexpr typename VectorND<type, size>::class_type VectorND<type, size>::Dir()
+{
+	class_type result = class_type{}; 
+	if constexpr (dir == Dir::UP)
+	{
+		result[1] = static_cast<type>(1);
+	}
+	 if constexpr (dir == Dir::DOWN)
+	{
+		result[1] = static_cast<type>(-1);
+	}
+	 if constexpr (dir == Dir::LEFT)
+	{
+		result[0] = static_cast<type>(-1);
+	}
+	 if constexpr (dir == Dir::RIGHT)
+	{
+		result[0] = static_cast<type>(1);
+	}
+	 if constexpr (dir == Dir::FORWARD )
+	{
+	 	static_assert(size >= 3, "must be at least 3D vector");
+		result[2] = static_cast<type>(1);
+	}
+	if constexpr (dir == Dir::BACKWARD )
+	{
+		static_assert(size >= 3, "must be at least 3D vector");
+		result[2] = static_cast<type>(-1);
+	}
+	return result;
+}
 
 template<size_t size>
 using  VectorF = VectorND<float, size>;
@@ -66,7 +114,7 @@ using  PointUI = Point<unsigned int, size>;
 
 
 template <typename type, size_t size>
-template <typename ... Arg>
+template <typename ... Arg> requires (sizeof...(Arg) <= size) && (... && (is_floating_type_v<Arg> || is_integral_type_v<Arg>))
 VectorND<type, size>::VectorND(const Arg&... args) : m_data(std::array<type, size>{static_cast<type>(args)...})
 {
 }
@@ -91,8 +139,15 @@ bool VectorND<type, size>::IsZero() const
 {
 	for (auto i = 0; i < size; ++i)
 	{
-		if (m_data[i] != 0)
-			return false;
+		if constexpr (is_floating_type_v<type>)
+		{
+			if (!Math::IsSameValue(m_data[i], static_cast<type>(0), Math::EPSILON_V<type>))
+				return false;
+		}
+		else {
+			if (m_data[i] != static_cast<type>(0))
+				return false;
+		}
 	}
 	return true;
 }
@@ -121,7 +176,8 @@ typename VectorND<type, size>::class_type VectorND<type, size>::operator+(const 
 }
 
 template <typename type, size_t size>
-typename VectorND<type, size>::class_type VectorND<type, size>::operator-(const class_type& other) const
+typename VectorND<type, size>::class_type VectorND<type, size>::
+operator-(const class_type& other) const
 {
 	class_type result;
 	for (auto i = 0; i < size; ++i)
@@ -152,7 +208,7 @@ typename VectorND<type, size>::class_type& VectorND<type, size>::operator-=(cons
 }
 
 template <typename type, size_t size>
-typename VectorND<type, size>::class_type VectorND<type, size>::operator*(const type& factor) const
+typename VectorND<type, size>::class_type VectorND<type, size>::operator*(const value_type& factor) const
 {
 	class_type result;
 	for (auto i = 0; i < size; ++i)
@@ -163,7 +219,7 @@ typename VectorND<type, size>::class_type VectorND<type, size>::operator*(const 
 }
 
 template <typename type, size_t size>
-typename VectorND<type, size>::class_type VectorND<type, size>::operator/(const type& divider) const
+typename VectorND<type, size>::class_type VectorND<type, size>::operator/(const value_type& divider) const
 {
 	if (divider == 0)
 		throw std::out_of_range("impossible to divide by 0");
@@ -176,7 +232,7 @@ typename VectorND<type, size>::class_type VectorND<type, size>::operator/(const 
 }
 
 template <typename type, size_t size>
-typename VectorND<type, size>::class_type& VectorND<type, size>::operator*=(const type& factor)
+typename VectorND<type, size>::class_type& VectorND<type, size>::operator*=(const value_type& factor)
 {
 	for (auto i = 0; i < size; ++i)
 	{
@@ -186,7 +242,7 @@ typename VectorND<type, size>::class_type& VectorND<type, size>::operator*=(cons
 }
 
 template <typename type, size_t size>
-typename VectorND<type, size>::class_type& VectorND<type, size>::operator/=(const type& divider)
+typename VectorND<type, size>::class_type& VectorND<type, size>::operator/=(const value_type& divider)
 {
 	if (divider == 0)
 		throw std::out_of_range("impossible to divide by 0");
@@ -198,13 +254,13 @@ typename VectorND<type, size>::class_type& VectorND<type, size>::operator/=(cons
 }
 
 template <typename type, size_t size>
-type VectorND<type, size>::Length() const
+typename VectorND<type, size>::value_type VectorND<type, size>::Length() const
 {
 	return std::sqrt(SquareLength());
 }
 
 template <typename type, size_t size>
-type VectorND<type, size>::SquareLength() const
+typename VectorND<type, size>::value_type VectorND<type, size>::SquareLength() const
 {
 	value_type result = value_type{};
 	for (auto& it : m_data)
@@ -231,13 +287,13 @@ typename VectorND<type, size>::class_type& VectorND<type, size>::selfNormalize()
 }
 
 template <typename type, size_t size>
-const type& VectorND<type, size>::operator[](const size_t& i) const
+const typename VectorND<type, size>::value_type& VectorND<type, size>::operator[](const size_t& i) const
 {
 	return m_data[i];
 }
 
 template <typename type, size_t size>
-type& VectorND<type, size>::at(const size_t& index)
+typename VectorND<type, size>::value_type& VectorND<type, size>::at(const size_t& index)
 {
 	if (index >= size)
 		throw std::out_of_range("index not in range");
@@ -245,7 +301,7 @@ type& VectorND<type, size>::at(const size_t& index)
 }
 
 template <typename type, size_t size>
-const type& VectorND<type, size>::at(const size_t& index) const
+const typename VectorND<type, size>::value_type& VectorND<type, size>::at(const size_t& index) const
 {
 	if (index >= size)
 		throw std::out_of_range("index not in range");
@@ -253,18 +309,29 @@ const type& VectorND<type, size>::at(const size_t& index) const
 }
 
 template <typename type, size_t size>
-type& VectorND<type, size>::operator[](const size_t& i)
+typename VectorND<type, size>::value_type& VectorND<type, size>::operator[](const size_t& i)
 {
 	return m_data[i];
 }
 
 template <typename type, size_t size>
-VectorND<type, size> VectorND<type, size>::dot(const class_type& other) const
+typename VectorND<type, size>::value_type VectorND<type, size>::dot(const class_type& other) const
 {
-	class_type result = class_type{};
+	value_type result = type{};
 	for (int i = 0; i < m_data.size(); ++i)
 	{
-		result[i] = m_data[i] * other[i];
+		result += m_data[i] * other[i];
 	}
 	return result;
+}
+
+template<typename type,size_t size>
+std::ostream& operator<<(std::ostream& os , const VectorND<type,size>& vec)
+{
+	for (int i = 0 ; i < size ; ++i)
+	{
+		os << vec[i] << " ";
+	}
+	os << "\n";
+	return os;
 }
