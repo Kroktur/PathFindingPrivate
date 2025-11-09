@@ -15,6 +15,10 @@ struct NavMesh
 	static NavMeshInfo  EraseFalseTriangle(const std::vector<Triangle>& vec,validator fnValidator);
     template<Dir dir>
     static bool DirValidator(const Triangle& triangle);
+	AABB3DF ResizeBox(const NavMeshInfo& box,const Vector2F& size) const 
+	{
+		return box.box;
+	}
 };
 
 template <Dir dir>
