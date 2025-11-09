@@ -126,6 +126,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="NavMesh.cpp" />
     <ClCompile Include="PathFinding.cpp" />
   </ItemGroup>
   <ItemGroup>

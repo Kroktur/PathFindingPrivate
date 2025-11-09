@@ -2,7 +2,9 @@
 #include <array>
 #include <cmath>
 #include <stdexcept>
-
+#include "PrimaryType_Category.h"
+#include "Math.h"
+#include <ostream>
 enum class Dir
 {
 	UP,

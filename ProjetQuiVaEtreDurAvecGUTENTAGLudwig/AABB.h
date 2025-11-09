@@ -42,6 +42,10 @@ struct AABB<type,3>
 	vector_type Amin, Amax;
 };
 
+template<typename type>
+using AABB3D = AABB<type, 3>;
+using AABB3DF = AABB3D<float>;
+using AABB3DI = AABB3D<int>;
 
 template <typename type>
 AABB<type, 3>::AABB(): Amin(),Amax()
@@ -255,6 +259,11 @@ struct AABB<type, 2>
 
 	vector_type Amin, Amax;
 };
+
+template<typename type>
+using AABB2D = AABB<type, 2>;
+using AABB2DF = AABB2D<float>;
+using AABB2DI = AABB2D<int>;
 
 template <typename type>
 AABB<type, 2>::AABB(): Amin(), Amax()
