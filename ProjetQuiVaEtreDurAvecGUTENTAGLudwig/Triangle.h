@@ -2,13 +2,13 @@
 #include "Vector2.h"
 #include "Vector3.h"
 
-struct Triangle
+struct Triangle2
 {
     Point3F A, B, C;
 
     Vector2F AB, BC, CA;
 
-    Triangle(Point3F a, Point3F b, Point3F c) : A(a), B(b), C(c),
+    Triangle2(Point3F a, Point3F b, Point3F c) : A(a), B(b), C(c),
     AB(B.x - A.x, B.z - A.z),
     BC(C.x - B.x, C.z - B.z),
     CA(A.x - C.x, A.z - C.z)
@@ -35,7 +35,7 @@ struct Limits
     float x_min, x_max;
     float y_min , y_max;
 
-    static Limits limit(const Triangle& tri)
+    static Limits limit(const Triangle2& tri)
     {
         Limits l;
         l.x_min = std::floor(std::min(std::min(tri.A.x, tri.B.x), tri.C.x));
@@ -53,7 +53,7 @@ struct Limits
 
 #include "Matrix.h"
 
-struct Triangle2
+struct Triangle
 {
 	Vector3F GetNormal() const ;
 	std::array<Vertex, 3> points;
@@ -97,7 +97,7 @@ struct Triangle2
 };
 
 //move to c++   
-inline Vector3F Triangle2::GetNormal() const 
+inline Vector3F Triangle::GetNormal() const 
 {
 	auto Ab = Vector3F(points[0].position, points[1].position);
 	auto Ac = Vector3F(points[0].position, points[2].position);
