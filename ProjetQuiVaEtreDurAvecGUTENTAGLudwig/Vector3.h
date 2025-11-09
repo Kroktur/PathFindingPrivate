@@ -22,6 +22,7 @@ public:
 	class_type& operator=(const VectorND<type, 3>& other);
 	class_type& operator=(VectorND<type, 3>&& other) noexcept;
 	class_type Cross(const class_type&) const;
+	
 };
 
 template<typename type>
@@ -112,3 +113,4 @@ typename Vector3<type>::class_type Vector3<type>::Cross(const class_type& other)
 	type resultZ = x * other.y - y * other.x;
 	return class_type{ resultX, resultY, resultZ };
 }
+

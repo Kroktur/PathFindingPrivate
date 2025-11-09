@@ -4,7 +4,7 @@
 
 #include "Matrix.h"
 
-struct Triangle2d
+struct Triangle
 {
 	Vector3F GetNormal() const ;
 	std::array<Vertex, 3> points;
@@ -48,7 +48,7 @@ struct Triangle2d
 };
 
 //move to c++   
-inline Vector3F Triangle2d::GetNormal() const 
+inline Vector3F Triangle::GetNormal() const 
 {
 	auto Ab = Vector3F(points[0].position, points[1].position);
 	auto Ac = Vector3F(points[0].position, points[2].position);

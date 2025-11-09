@@ -2,6 +2,18 @@
 #include <array>
 #include <cmath>
 #include <stdexcept>
+#include "PrimaryType_Category.h"
+#include "Math.h"
+#include <ostream>
+enum class Dir
+{
+	UP,
+	DOWN,
+	LEFT,
+	RIGHT,
+	FORWARD,
+	BACKWARD
+};
 
 template<typename type, size_t size>
 class VectorND
@@ -43,9 +55,45 @@ public:
 	class_type normalize() const;
 	class_type& selfNormalize();
 	value_type dot(const class_type& other) const;
+	template<Dir dir> requires ( size >=2 )
+	static constexpr class_type  Dir();
 protected:
 	std::array<type, size> m_data;
 };
+
+template <typename type, size_t size>
+template <Dir dir> requires (size >= 2 )
+constexpr typename VectorND<type, size>::class_type VectorND<type, size>::Dir()
+{
+	class_type result = class_type{}; 
+	if constexpr (dir == Dir::UP)
+	{
+		result[1] = static_cast<type>(1);
+	}
+	 if constexpr (dir == Dir::DOWN)
+	{
+		result[1] = static_cast<type>(-1);
+	}
+	 if constexpr (dir == Dir::LEFT)
+	{
+		result[0] = static_cast<type>(-1);
+	}
+	 if constexpr (dir == Dir::RIGHT)
+	{
+		result[0] = static_cast<type>(1);
+	}
+	 if constexpr (dir == Dir::FORWARD )
+	{
+	 	static_assert(size >= 3, "must be at least 3D vector");
+		result[2] = static_cast<type>(1);
+	}
+	if constexpr (dir == Dir::BACKWARD )
+	{
+		static_assert(size >= 3, "must be at least 3D vector");
+		result[2] = static_cast<type>(-1);
+	}
+	return result;
+}
 
 template<size_t size>
 using  VectorF = VectorND<float, size>;
@@ -91,8 +139,15 @@ bool VectorND<type, size>::IsZero() const
 {
 	for (auto i = 0; i < size; ++i)
 	{
-		if (m_data[i] != 0)
-			return false;
+		if constexpr (is_floating_type_v<type>)
+		{
+			if (!Math::IsSameValue(m_data[i], static_cast<type>(0), Math::EPSILON_V<type>))
+				return false;
+		}
+		else {
+			if (m_data[i] != static_cast<type>(0))
+				return false;
+		}
 	}
 	return true;
 }
@@ -121,7 +176,8 @@ typename VectorND<type, size>::class_type VectorND<type, size>::operator+(const 
 }
 
 template <typename type, size_t size>
-typename VectorND<type, size>::class_type VectorND<type, size>::operator-(const class_type& other) const
+typename VectorND<type, size>::class_type VectorND<type, size>::
+operator-(const class_type& other) const
 {
 	class_type result;
 	for (auto i = 0; i < size; ++i)

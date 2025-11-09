@@ -4,7 +4,9 @@
 #include <conio.h>
 #include "FloodFill.h"
 #include "Matrix.h"
+#include "NavMesh.h"
 #include "Triangle.h"
+#include "Vector2.h"
 #include "Vertex.h"
 
 static constexpr bool grille[] = {
@@ -39,22 +41,12 @@ int main()
 	Vertex A1;
 	Vertex A2;
 	Vertex A3;
-	A1.position = Vector3F{ 4.0f, 2.0f, 3.0f };
-	A2.position = Point3F{ 5.0f, 2.0f, 1.0f};
-	A3.position = Point3F{ 3.0f, 6.0f, 4.0f };
-	//Vector3F A(0.0f, 0.0f, 0.0f);
-	//Vector3F B(4.0f, 0.0f, 0.0f);
-	//Vector3F C(2.0f, 3.0f, 0.0f);
+	A1.position = Vector3F{ 4.0f, 0.0f, 2.0f };
+	A2.position = Point3F{ 5.0f, 0.0f, 2.0f};
+	A3.position = Point3F{ 3.0f, 0.0f, 6.0f };
+	auto result = VectorND<float,4>::Dir<Dir::FORWARD>();
 
-	Triangle2d triangle;
-	triangle.points = {A1,A2,A3};
-	auto result = triangle.GetCircumcenter();
-	if (!triangle.IsCircumcenter(result))
-		throw;
-	std::cout << result;
-	//FloodFill(t2,Grid2d<10>::GetIndex(1,1));
-	//FloodFillFn(t2, Dimension2d<10>::GetIndex(7, 8));
-	//FloodFillIterative(t2, Dimension2d<10>::GetIndex(1, 1));
-	//FloodFillIterative(t2, Grid2d<10>::GetIndex(7, 8));
-	
+	auto resultNav = NavMesh::EraseFalseTriangle(std::vector<Triangle>{Triangle{A1,A3,A2}}, NavMesh::DirValidator<Dir::UP>);
+
+	std::cout << resultNav.triangles.size();
 }

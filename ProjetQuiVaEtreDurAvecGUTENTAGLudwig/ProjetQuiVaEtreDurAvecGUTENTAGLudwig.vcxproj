@@ -126,12 +126,15 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="NavMesh.cpp" />
     <ClCompile Include="PathFinding.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AABB.h" />
     <ClInclude Include="FloodFill.h" />
     <ClInclude Include="Math.h" />
     <ClInclude Include="Matrix.h" />
+    <ClInclude Include="NavMesh.h" />
     <ClInclude Include="PrimaryType_Category.h" />
     <ClInclude Include="Triangle.h" />
     <ClInclude Include="Typelist.h" />
@@ -140,6 +143,7 @@
     <ClInclude Include="Vector3.h" />
     <ClInclude Include="VectorND.h" />
     <ClInclude Include="Vertex.h" />
+    <ClInclude Include="Voxel.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
