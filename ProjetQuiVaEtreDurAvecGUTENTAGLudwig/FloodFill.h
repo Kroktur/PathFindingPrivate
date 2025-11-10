@@ -312,35 +312,35 @@ Dimension2d Grid2d<tabType>::GetDim() const
 template<typename tabType>
 struct FloodFill
 {
-	template<bool (*ModifyFn)(const tabType& value), void (*AffectationFN)(tabType& value)>
-	static void Recursive(Grid2d<tabType>& tab, size_t index);
+	template <typename ModifyFn, typename AffectationFN>
+	static void Recursive(Grid2d<tabType>& tab, size_t index, ModifyFn modify, AffectationFN affectation);
 
-	template<bool (*ModifyFn)(const tabType& value), void (*AffectationFN)(tabType& value)>
-	static void Iterative(Grid2d<tabType>& tab, size_t index);
+	template<typename ModifyFn, typename AffectationFN>
+	static void Iterative(Grid2d<tabType>& tab, size_t index, ModifyFn modify, AffectationFN affectation);
 };
 
 template <typename tabType>
-template <bool(* ModifyFn)(const tabType& value), void(* AffectationFN)(tabType& value)>
-void FloodFill<tabType>::Recursive(Grid2d<tabType>& tab, size_t index)
+template <typename ModifyFn, typename AffectationFN>
+void FloodFill<tabType>::Recursive(Grid2d<tabType>& tab, size_t index, ModifyFn modify, AffectationFN affectation)
 {
-	if (!ModifyFn(tab[index]))
+	if (!modify(tab[index]))
 		return;
-	AffectationFN(tab[index]);
+	affectation(tab[index]);
 	size_t raw = index / tab.GetDim().width;
 	size_t col = index - raw * tab.GetDim().width;
 	if (tab.GetDim().IsInRange(raw - 1, col))
-		Recursive<ModifyFn, AffectationFN>(tab, tab.GetDim().GetIndex(raw - 1, col));
+		Recursive<ModifyFn, AffectationFN>(tab, tab.GetDim().GetIndex(raw - 1, col), modify,affectation);
 	if (tab.GetDim().IsInRange(raw + 1, col))
-		Recursive<ModifyFn, AffectationFN>(tab, tab.GetDim().GetIndex(raw + 1, col));
+		Recursive<ModifyFn, AffectationFN>(tab, tab.GetDim().GetIndex(raw + 1, col), modify, affectation);
 	if (tab.GetDim().IsInRange(raw, col - 1))
-		Recursive<ModifyFn, AffectationFN>(tab, tab.GetDim().GetIndex(raw, col - 1));
+		Recursive<ModifyFn, AffectationFN>(tab, tab.GetDim().GetIndex(raw, col - 1), modify, affectation);
 	if (tab.GetDim().IsInRange(raw, col + 1))
-		Recursive<ModifyFn, AffectationFN>(tab, tab.GetDim().GetIndex(raw, col + 1));
+		Recursive<ModifyFn, AffectationFN>(tab, tab.GetDim().GetIndex(raw, col + 1), modify, affectation);
 }
 
 template <typename tabType>
-template <bool(* ModifyFn)(const tabType& value), void(* AffectationFN)(tabType& value)>
-void FloodFill<tabType>::Iterative(Grid2d<tabType>& tab, size_t index)
+template <typename ModifyFn, typename AffectationFN>
+void FloodFill<tabType>::Iterative(Grid2d<tabType>& tab, size_t index,ModifyFn modify,AffectationFN affectation)
 {
 	std::deque<size_t> toVisit;
 	toVisit.push_back(index);
@@ -352,9 +352,9 @@ void FloodFill<tabType>::Iterative(Grid2d<tabType>& tab, size_t index)
 
 		toVisit.pop_front();
 
-		if (!ModifyFn(tab[currentIndex]))
+		if (!modify(tab[currentIndex]))
 			continue;
-		AffectationFN(tab[currentIndex]);
+		affectation(tab[currentIndex]);
 		size_t raw = currentIndex / tab.GetDim().width;
 		size_t col = currentIndex - raw * tab.GetDim().width;
 		if (tab.GetDim().IsInRange(raw - 1, col))

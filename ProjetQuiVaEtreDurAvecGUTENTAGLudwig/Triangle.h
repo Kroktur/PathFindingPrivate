@@ -59,34 +59,10 @@ struct Triangle
 	std::array<Vertex, 3> points;
     Vector3F GetCircumcenter() const;
 	bool IsCircumcenter(const Point3F& point) const;
-
-    bool testPointTriangle(const Point3F& P) const
-    {
-        const Vector3F& A = points[0].position;
-        const Vector3F& B = points[1].position;
-        const Vector3F& C = points[2].position;
-
-        Vector3F AB = B - A;
-        Vector3F BC = C - B;
-        Vector3F CA = A - C;
-
-        Vector3F AP = P - A;
-        Vector3F BP = P - B;
-        Vector3F CP = P - C;
-
-        Vector3F N = GetNormal();
-
-        Vector3F cross1 = AB.Cross(AP);
-        Vector3F cross2 = BC.Cross(BP);
-        Vector3F cross3 = CA.Cross(CP);
-
-        if (cross1.Dot(N) >= 0 && cross2.Dot(N) >= 0 && cross3.Dot(N) >= 0)
-            return true;
-        if (cross1.Dot(N) <= 0 && cross2.Dot(N) <= 0 && cross3.Dot(N) <= 0)
-            return true;
-
-        return false;
-    }
+    Vector3F GetCenter() const;
+	bool testPointTriangle(const Point3F& P) const;
+	bool operator==(const Triangle& other) const;
+	bool operator!=(const Triangle& other) const;
 };
 
 //move to c++   
@@ -135,4 +111,52 @@ inline bool Triangle::IsCircumcenter(const Point3F& point) const
 	if (Math::IsSameValue(Ap.Length(), Bp.Length(), Math::EPSILON_FLOAT) && Math::IsSameValue(Ap.Length(), Cp.Length(), Math::EPSILON_FLOAT))
 		return true;
 	return false;
+}
+
+inline Vector3F Triangle::GetCenter() const
+{
+	return (points[0].position + points[1].position + points[2].position) / 3.0f;
+}
+
+inline bool Triangle::testPointTriangle(const Point3F& P) const
+{
+	const Vector3F& A = points[0].position;
+	const Vector3F& B = points[1].position;
+	const Vector3F& C = points[2].position;
+
+	Vector3F AB = B - A;
+	Vector3F BC = C - B;
+	Vector3F CA = A - C;
+
+	Vector3F AP = P - A;
+	Vector3F BP = P - B;
+	Vector3F CP = P - C;
+
+	Vector3F N = GetNormal();
+
+	Vector3F cross1 = AB.Cross(AP);
+	Vector3F cross2 = BC.Cross(BP);
+	Vector3F cross3 = CA.Cross(CP);
+
+	if (cross1.Dot(N) >= 0 && cross2.Dot(N) >= 0 && cross3.Dot(N) >= 0)
+		return true;
+	if (cross1.Dot(N) <= 0 && cross2.Dot(N) <= 0 && cross3.Dot(N) <= 0)
+		return true;
+
+	return false;
+}
+
+inline bool Triangle::operator==(const Triangle& other) const
+{
+	for (size_t i = 0 ; i < 3 ; ++i)
+	{
+		if (points[i].position != other.points[i].position)
+			return false;
+	}
+	return true;
+}
+
+inline bool Triangle::operator!=(const Triangle& other) const
+{
+	return !(*this == other);
 }

@@ -54,10 +54,44 @@ int main()
 	NavMeshInfo info;
 	info.box = AABB3DF{ {0,-1.0f,0},{100,1.0f,100} };
 	Vector3F voxel = {0.2f,2.0f,0.2f};
- NavMesh::ResizeNavMesh(info, voxel);
- std::cout << info.box.Amin << "\n";
- std::cout << info.box.Amax << "\n";
- auto grid = NavMesh::GenerateGrid(info, voxel);
- std::cout << grid.GetDim().Size();
+	NavMesh::ResizeNavMesh(info, voxel);
+	std::cout << info.box.Amin << "\n";
+	std::cout << info.box.Amax << "\n";
+	auto grid = NavMesh::GenerateGrid(info, voxel);
+	std::cout << grid.GetDim().Size() << "\n";
+	//std::cout << grid[1].box.Amin << " " << grid[1].box.Amax;
 
+
+	// testRasterisation
+	for (auto it : info.triangles)
+	{
+		auto center = it.GetCenter();
+		auto i = static_cast<int>(floor((center.x - info.box.Amin.x) / voxel.x));
+		auto j = static_cast<int>(floor((center.z - info.box.Amin.z) / voxel.z));
+		auto index = grid.GetDim().GetIndex(i, j);
+		auto modifyFN = [it](const Voxel& voxel) ->bool
+			{
+				if (!it.testPointTriangle(voxel.Center()))
+					return false;
+				if (!voxel.lastTriangle.has_value())
+					return true;
+				if (voxel.lastTriangle.value() == it)
+					return false;
+				return true;
+			};
+		auto AffectationFN = [it](Voxel& voxel) -> void
+			{
+				voxel.lastTriangle = it;
+				if (!voxel.walkable.has_value())
+					voxel.walkable = true;
+				if (it.GetNormal().normalize() != Vector3F::Dir<Dir::UP>())
+					voxel.walkable = false;
+				for (auto point : it.points)
+				{
+					if (!Math::IsSameValue(point.position.y,0.0f,Math::EPSILON_FLOAT))
+						voxel.walkable = false;
+				}
+			};
+		FloodFill<Voxel>::Iterative(grid, index, modifyFN, AffectationFN);
+	}
 }

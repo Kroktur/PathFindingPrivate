@@ -10,6 +10,7 @@ struct Voxel
 	{
 		return box.Center();
 	}
+	std::optional<Triangle> lastTriangle;
 	std::optional<bool> walkable;
 };
 

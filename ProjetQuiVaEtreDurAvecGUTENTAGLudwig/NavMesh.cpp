@@ -83,12 +83,12 @@ Grid2d<Voxel> NavMesh::GenerateGrid(const NavMeshInfo& info, const Vector3F& vox
 		auto startX = info.box.Amin.x;
 		for (size_t j = 0 ; j < grid.GetDim().width ; ++j)
 		{
-			Vector3F Amin = Vector3F{ startX,info.box.Amin.y,startZ - voxelSize.z };
-			Vector3F Amax = Vector3F{startX + voxelSize.x , info.box.Amax.y, startZ};
+			Vector3F Amin = Vector3F{ startX,info.box.Amin.y,startZ };
+			Vector3F Amax = Vector3F{startX + voxelSize.x , info.box.Amax.y, startZ + voxelSize.z};
 			grid.At(grid.GetDim().GetIndex(i, j)).box = AABB3DF{Amin,Amax};
 			startX += voxelSize.x;
 		}
-		startZ -= voxelSize.z;
+		startZ += voxelSize.z;
 	}
 	return grid;
 }
