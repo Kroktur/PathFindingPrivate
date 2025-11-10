@@ -189,12 +189,10 @@ struct Dimension2d
 	Dimension2d(size_t height_,size_t width_);
 	Dimension2d(const Dimension2d&) = default;
 	Dimension2d(Dimension2d&&) noexcept = default;
-	Dimension2d& operator=(const Dimension2d&) = default;
-	Dimension2d& operator=(Dimension2d&&) noexcept = default;
 	size_t GetIndex(size_t row, size_t col) const;
 	bool IsInRange(size_t row, size_t col) const;
 	size_t Size() const;
-	size_t height, width;
+	const size_t height, width;
 };
 
 

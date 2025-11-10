@@ -25,7 +25,7 @@ static constexpr int grille[] = {
 
 int main()
 {
-	Grid2d<int> t{Dimension2d(10,10)};
+	/*Grid2d<int> t{Dimension2d(10,10)};
 	t[Dimension2dStatic<10>::GetIndex(1, 1)] = 1;
 	Grid2d<int> t2{ Dimension2d(10,10) ,grille,100 };
 
@@ -33,7 +33,7 @@ int main()
 		t2.DrawGrid();
 		if (_getch())
 		{
-			FloodFill<int>::Iterative< [](const int& b) {return b == 1; }, [](int& b) {b = 0; } > (t2, Dimension2dStatic<10>::GetIndex(1, 1));}
+			FloodFill<int>::Iterative< [](const int& b) {return b == 1; }, [](int& b) {b = 0; } > (t2, t2.GetDim().GetIndex(1,1));}
 		std::cout << "\n";
 		t2.DrawGrid();
 
@@ -49,5 +49,15 @@ int main()
 
 	auto resultNav = NavMesh::EraseFalseTriangle(std::vector<Triangle>{Triangle{ A1,A3,A2 }}, NavMesh::DirValidator<Dir::UP>);
 
-	std::cout << resultNav.triangles.size();
+	std::cout << resultNav.triangles.size();*/
+
+	NavMeshInfo info;
+	info.box = AABB3DF{ {0,-1.0f,0},{100,1.0f,100} };
+	Vector3F voxel = {0.2f,2.0f,0.2f};
+ NavMesh::ResizeNavMesh(info, voxel);
+ std::cout << info.box.Amin << "\n";
+ std::cout << info.box.Amax << "\n";
+ auto grid = NavMesh::GenerateGrid(info, voxel);
+ std::cout << grid.GetDim().Size();
+
 }

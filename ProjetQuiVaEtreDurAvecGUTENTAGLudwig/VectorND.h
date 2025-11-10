@@ -54,7 +54,7 @@ public:
 	value_type SquareLength() const;
 	class_type normalize() const;
 	class_type& selfNormalize();
-	value_type dot(const class_type& other) const;
+	value_type Dot(const class_type& other) const;
 	template<Dir dir> requires ( size >=2 )
 	static constexpr class_type  Dir();
 protected:
@@ -315,7 +315,7 @@ typename VectorND<type, size>::value_type& VectorND<type, size>::operator[](cons
 }
 
 template <typename type, size_t size>
-typename VectorND<type, size>::value_type VectorND<type, size>::dot(const class_type& other) const
+typename VectorND<type, size>::value_type VectorND<type, size>::Dot(const class_type& other) const
 {
 	value_type result = type{};
 	for (int i = 0; i < m_data.size(); ++i)

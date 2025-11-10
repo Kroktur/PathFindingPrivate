@@ -15,15 +15,12 @@ struct NavMesh
 {
 	using validator = bool(*)(const Triangle&);
 	static NavMeshInfo  EraseFalseTriangle(const std::vector<Triangle>& vec,validator fnValidator);
+	static NavMeshInfo CreateNavMesh(const std::vector<Triangle>& vec);
     template<Dir dir>
     static bool DirValidator(const Triangle& triangle);
 	static void ResizeNavMesh(NavMeshInfo& box,const Vector3F& voxelSize);
-	static void GenerateGrid(NavMeshInfo info, const Vector3F& voxelSize)
-	{
-		size_t sizeX = static_cast<size_t>(info.box.Size().x / voxelSize.x);
-		size_t sizeZ = static_cast<size_t>(info.box.Size().z / voxelSize.z);
-		Grid2d<Voxel> grid(Dimension2d(sizeX,sizeZ));
-	}
+	static Grid2d<Voxel> GenerateGrid(const NavMeshInfo& info, const Vector3F& voxelSize);
+
 };
 
 template <Dir dir>
