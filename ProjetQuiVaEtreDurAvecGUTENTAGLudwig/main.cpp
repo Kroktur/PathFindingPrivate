@@ -10,7 +10,7 @@
 #include "Vector2.h"
 #include "Vertex.h"
 
-static constexpr bool grille[] = {
+static constexpr int grille[] = {
 		0, 1, 0, 0, 0, 0, 0, 0, 0, 0,
 		1, 1, 1, 1, 0, 0, 0, 1, 0, 0,
 		0, 1, 1, 1, 1, 1, 1, 1, 0, 0,
@@ -25,17 +25,17 @@ static constexpr bool grille[] = {
 
 int main()
 {
-	//Grid2d<bool,10> t{};
-	//t[Dimension2d<10>::GetIndex(1, 1)] = true;
-	//Grid2d<bool, 10 > t2;
-	//t2 = grille;
-	//
-	//	t2.DrawGrid();
-	//	if (_getch())
-	//	{
-	//		FloodFill<bool, 10>::Iterative< [](const bool& b) {return b == true; }, [](bool& b) {b = false; } > (t2, Dimension2d<10>::GetIndex(1, 1));}
-	//	std::cout << "\n";
-	//	t2.DrawGrid();
+	Grid2d<int> t{Dimension2d(10,10)};
+	t[Dimension2dStatic<10>::GetIndex(1, 1)] = 1;
+	Grid2d<int> t2{ Dimension2d(10,10) ,grille,100 };
+
+	
+		t2.DrawGrid();
+		if (_getch())
+		{
+			FloodFill<int>::Iterative< [](const int& b) {return b == 1; }, [](int& b) {b = 0; } > (t2, Dimension2dStatic<10>::GetIndex(1, 1));}
+		std::cout << "\n";
+		t2.DrawGrid();
 
 
 

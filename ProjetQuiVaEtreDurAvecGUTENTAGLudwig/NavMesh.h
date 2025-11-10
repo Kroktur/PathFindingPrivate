@@ -1,8 +1,10 @@
 #pragma once
 #include <vector>
-
 #include "AABB.h"
+#include "FloodFill.h"
 #include "Triangle.h"
+#include "Voxel.h"
+
 struct NavMeshInfo
 {
 	AABB3DF box;
@@ -15,9 +17,12 @@ struct NavMesh
 	static NavMeshInfo  EraseFalseTriangle(const std::vector<Triangle>& vec,validator fnValidator);
     template<Dir dir>
     static bool DirValidator(const Triangle& triangle);
-	AABB3DF ResizeBox(const NavMeshInfo& box,const Vector2F& size) const 
+	static void ResizeNavMesh(NavMeshInfo& box,const Vector3F& voxelSize);
+	static void GenerateGrid(NavMeshInfo info, const Vector3F& voxelSize)
 	{
-		return box.box;
+		size_t sizeX = static_cast<size_t>(info.box.Size().x / voxelSize.x);
+		size_t sizeZ = static_cast<size_t>(info.box.Size().z / voxelSize.z);
+		Grid2d<Voxel> grid(Dimension2d(sizeX,sizeZ));
 	}
 };
 
